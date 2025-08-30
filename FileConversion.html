@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi File Converter</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; background: #f9f9f9; }
+    form { max-width: 400px; margin: auto; background: #fff; padding: 1.5rem; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select, button { margin-top: 1rem; width: 100%; padding: 0.5rem; font-size: 1rem; }
+    h2 { text-align: center; }
+  </style>
+</head>
+<body>
+  <form id="converterForm">
+    <h2>File Converter</h2>
+    <label>Select one or more files:</label>
+    <input type="file" name="file" id="file" multiple required>
+    <label>Select conversion type:</label>
+    <select name="conversion" id="conversion" required>
+      <option value="heic-jpg">HEIC → JPG</option>
+      <option value="img-pdf">JPG/PNG → PDF</option>
+      <option value="pdf-img">PDF → JPG</option>
+      <option value="pdf-docx">PDF → Word</option>
+      <option value="docx-pdf">Word → PDF</option>
+    </select>
+    <button type="submit">Convert</button>
+  </form>
+
+  <script>
+    document.getElementById('converterForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const files = document.getElementById('file').files;
+      const formData = new FormData();
+      for (const file of files) {
+        formData.append('file', file);
+      }
+      formData.append('conversion', document.getElementById('conversion').value);
+
+      // 🔁 Replace this with your backend endpoint URL (e.g., Render or DevTunnel)
+      const BACKEND_URL = 'http://127.0.0.1:5000/convert';
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) throw new Error("Conversion failed");
+
+        const blob = await res.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'converted_files.zip';
+        link.click();
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
